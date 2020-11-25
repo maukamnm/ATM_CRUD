@@ -1,26 +1,14 @@
 package Controller;
-//11/18 10-12|| 11/19 11-4 || 11-20 11:40-2, 3:30-5, 9-11 ||
 
-import java.util.Scanner;
+import View.Login_GUI;
 
-import Model.ATM;
-
-public class BankingController {
-
+public class BankingDriver {
+	// 11/18 10-12|| 11/19 11-3 || 11/20 11:30-2, 3:30-6 || 11/22 3:15-5:30 || 11/23
+	// 2-4:30 || Total = 15.75 || 11/24 10-12:15, 12:30-1, 1:30-5:30 Day total 6.75 || Total = 22.5 ||
+	// 11/25 9-11, 11:45-2 --  day total = 4.25 ||
 	static ATM atm = new ATM();
-	
-	static Scanner sc = new Scanner(System.in);
 
 	public static void main(String[] args) {
-		atm.login();
-//		int start = sc.nextInt();
-//		if (start == 1) {
-//			atm.createUser();
-//			atm.login();
-//		}
-//		if (start == 2) {
-//			atm.login();
-//		}
+		Login_GUI.createAndShowGUI();
 	}
-
 }

@@ -1,0 +1,156 @@
+package View;
+
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.UIManager;
+import Controller.ATM;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import javax.swing.UnsupportedLookAndFeelException;
+
+public class Delete extends JFrame {
+
+	//instance of atm
+	static ATM atm = new ATM();
+	// add this field
+//Initializing JTextFields
+	private static final long serialVersionUID = 1L;
+
+	// public String deleteAnAccount(int deleteID);
+
+	private JTextField TransferToIDField;
+	private JTextField TransferFromIDField;
+	private JTextField UserIDField;
+	private JLabel messageLabel;
+
+	public Delete() {
+
+		initComponents();
+
+	}
+
+	private void initComponents() {
+//Throwing exceptions
+		try {
+
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+
+		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException
+
+				| UnsupportedLookAndFeelException e) {
+
+			System.out.println(e);
+
+		}
+
+		setTitle("Delete Account");
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setLocationByPlatform(true);
+
+		// Creating jtextfields for all of the information desired
+
+		TransferToIDField = new JTextField();
+		TransferFromIDField = new JTextField();
+		UserIDField = new JTextField();
+		messageLabel = new JLabel("Hi! Please enter your information.");
+
+		// setting dminensions for the box
+		Dimension dim = new Dimension(150, 20);
+
+		// setting size
+		TransferToIDField.setPreferredSize(dim);
+		TransferFromIDField.setPreferredSize(dim);
+		UserIDField.setPreferredSize(dim);
+		TransferToIDField.setMinimumSize(dim);
+		TransferFromIDField.setMinimumSize(dim);
+		UserIDField.setMinimumSize(dim);
+
+		JButton registerButton = new JButton("Delete Account");
+		JButton menuButton = new JButton("Menu"); 
+
+		registerButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				DeleteAccountButtonClicked();
+			}
+		});
+
+		// Sending anonymous object to the addActionListner function
+
+		menuButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				menuButtonClicked();
+			}
+		});
+
+		// button panel of register and exit
+		JPanel buttonPanel = new JPanel();
+		buttonPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
+		buttonPanel.add(registerButton);
+		buttonPanel.add(menuButton);
+
+		// main panel that creates JLabels that go in order next to the text fields
+
+		JPanel panel = new JPanel();
+		panel.setLayout(new GridBagLayout());
+		panel.add(new JLabel("Account to Transfer To"), getConstraints(0, 0));
+		panel.add(TransferToIDField, getConstraints(1, 0));
+		panel.add(new JLabel("Account to Transfer From"), getConstraints(0, 1));
+		panel.add(TransferFromIDField, getConstraints(1, 1));
+		panel.add(new JLabel("User ID:"), getConstraints(0, 2));
+		panel.add(UserIDField, getConstraints(1, 2));
+		GridBagConstraints c = getConstraints(0, 6);
+		c.gridwidth = 22;
+		panel.add(messageLabel, c);
+		add(panel, BorderLayout.CENTER);
+		add(buttonPanel, BorderLayout.SOUTH);
+		// setting dimensions for the full pane.
+		setSize(new Dimension(420, 300));
+
+	}
+
+	// helper method for getting a GridBagConstraints object
+
+	private GridBagConstraints getConstraints(int x, int y) {  
+		GridBagConstraints c = new GridBagConstraints();
+		c.anchor = GridBagConstraints.LINE_START;
+		c.insets = new Insets(5, 5, 0, 5);
+		c.gridx = x;
+		c.gridy = y;
+		return c;
+
+	}
+	
+	private void DeleteAccountButtonClicked() {
+
+		int toID = Integer.valueOf(TransferToIDField.getText());
+		int fromID = Integer.valueOf(TransferFromIDField.getText());
+		int UserID = Integer.valueOf(UserIDField.getText());
+
+		atm.deleteAnAccount(UserID, fromID, toID);
+
+	}
+
+//If the user decides to changed his mind, he can press exit and escape the
+	// potentially frightful array of colors.
+	private void menuButtonClicked() {
+		System.exit(0);
+	}
+
+//The main function where everything in the JFrame is called on to be executed,
+// and seen
+	public static void createAndShowGUI() {
+		JFrame frame = new Delete();
+		frame.setVisible(true);
+
+	}
+
+}

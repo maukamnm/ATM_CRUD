@@ -5,81 +5,76 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Scanner;
 import Repositories.ATM_Plan;
 
 public class ATM implements ATM_Plan {
 
+	// Many of these vars could have been taken out.
+	// User_ID could have been global
+	// Console App: User_ID was assigned to the MySQL int when logged in
+
 	int User_ID = 0;
-	int Account_ID = 0;
 	static boolean loggedIn = false;
-	long balance = 0;
-	int balanceTo = 0;
-	long amountTrans = 0;
-	int Account_ID_From = 0;
-	int Account_ID_To = 0;
-	String sign = "";
-	static Long cc = (long) 0;
-	static int pin = 0;
-
-	static long ccLog = 0;
-	static int pinLog = 0;
-
-	// change connection
+	String returnString = "";
 	static final String DB_URL = "jdbc:mysql://127.0.0.1/cfmatm";
 	static final String USER = "root";
 	static final String PASS = "root";
 	static Connection connection;
 
-	static Scanner sc = new Scanner(System.in);
-
+	// Login worked in console app, but not through the GUI
 	@Override
 	public void login(long cc, int pin) {
-			try {
-				Class.forName("com.mysql.cj.jdbc.Driver");
-				// Make the connection to the DB server and DB by passing in server credentials
-				connection = DriverManager.getConnection(DB_URL, USER, PASS);
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
+		// initializing local variable
+		long ccLog = 0;
+		int pinLog = 0;
+		try {
+			Class.forName("com.mysql.cj.jdbc.Driver");
+			// Make the connection to the DB server and DB by passing in server credentials
+			connection = DriverManager.getConnection(DB_URL, USER, PASS);
 
-			try {
-				// Write the SQL with ? as placeholders for user or code variables
-				String sql = "SELECT User_ID, CC_number, Pin FROM User WHERE CC_number = ? AND Pin = ?";
-				// Create a PreparedStatement object so it look for the ? placeholders
-				PreparedStatement stmt = connection.prepareStatement(sql);
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 
-				// Replace the ? with the correct number and type of variable (e.g. String)
-				stmt.setLong(1, cc);
-				stmt.setInt(2, pin);
+		try {
+			// Write the SQL with ? as placeholders for user or code variables
+			String sql = "SELECT User_ID, CC_number, Pin FROM User WHERE CC_number = ? AND Pin = ?";
+			// Create a PreparedStatement object so it look for the ? placeholders
+			PreparedStatement stmt = connection.prepareStatement(sql);
 
-				// Execute the query based on the PreparedStatement object, do not pass the sql
-				// variable
-				ResultSet results = stmt.executeQuery();
+			// Replace the ? with the correct number and type of variable (e.g. String)
+			stmt.setLong(1, cc);
+			stmt.setInt(2, pin);
 
-				// Loop through the results of the query
-				while (results.next()) {
+			// Execute the query based on the PreparedStatement object, do not pass the sql
+			// variable
+			ResultSet results = stmt.executeQuery();
+			// Loop through the results of the query
+			while (results.next()) {
+				results.getInt("User_ID");
+				results.getInt("Pin");
+				// If data entry in GUI matches the CC and Pin found in the DB LoggedIn = True
+				if (cc == (results.getLong("CC_number")) && pin == (results.getInt("Pin"))) {
+					// Using this, User_ID has been global scope
 					User_ID = results.getInt("User_ID");
-					cc = results.getLong("CC_number");
-					results.getInt("Pin");
-					if (cc == (results.getLong("CC_number")) && pin == (results.getInt("Pin"))) {
-						ccLog = Long.valueOf(results.getLong("CC_number"));
-						pinLog = Integer.valueOf(results.getInt("Pin"));
-						loggedIn = true;
-						break;
-					}
+					ccLog = (results.getLong("CC_number"));
+					pinLog = (results.getInt("Pin"));
+					loggedIn = true;
+					break;
 				}
-				// Credentials are valid so return TRUE
-			} catch (SQLException e) {
-				e.printStackTrace();
 			}
+			// Credentials are valid so return TRUE
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
-	public static boolean loggedIn(long ccLog, int pinLog) {
-		// if (ccLog.equals(cc) && pinLog.equals(pin)) {
-		if (ccLog == cc && pinLog == pin) {
+	// Since you have seen this last, I removed parameters that did nothing
+	// and commented out code was replaced with boolean if else
+	public static boolean loggedIn() {
+		if (loggedIn == true) {
 			return true;
 		} else {
 			return false;
@@ -87,7 +82,8 @@ public class ATM implements ATM_Plan {
 	}
 
 	@Override
-	public void createAccount(int User_ID) {
+	public void createAccount() {
+		// Creates account in the mysql DB
 		String sql = "INSERT INTO Bank_account (User_ID, Account_balance) VALUES (?,?)";
 		try {
 			PreparedStatement stmt = connection.prepareStatement(sql);
@@ -100,9 +96,9 @@ public class ATM implements ATM_Plan {
 	}
 
 	@Override
-	public String readAccountInfo(int Account_ID) {
-
-		String accountInfo = "User ID\t\tAccount ID\t\tBalance\n";
+	public String readAccountInfo() {
+		// An arraylist would suit this function best but I could not figure out how to
+		// return one for the GUI.
 		String sql1 = "SELECT User_ID, Account_ID, Account_balance FROM Bank_account where User_ID = ?";
 		try {
 			PreparedStatement stmt = connection.prepareStatement(sql1);
@@ -111,34 +107,30 @@ public class ATM implements ATM_Plan {
 			ResultSet results = stmt.executeQuery();
 
 			while (results.next()) {
-				// Wanted to return an array of Account class objects, but I was having a hard
-				// time finding something to allow that
-				accountInfo = accountInfo + results.getInt("User_ID");
-				accountInfo = accountInfo + results.getInt("Account_ID");
-				accountInfo = accountInfo + "\t" + results.getLong("Account_balance") + "\n";
+				returnString = returnString + "|| User ID #" + results.getInt("User_ID");
+				returnString = returnString + ", Account ID #" + results.getInt("Account_ID");
+				returnString = returnString + ", $" + results.getLong("Account_balance") + "|| ";
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return accountInfo;
+		// When I tried to return an ArrayList of info, it would not be accepted in
+		// the GUI when I called it inside setText for the MessageLabel.
+		// I previously used encapsulation in the console app with an object of account
+		// that had attributes User_ID, Account_ID, and Account_Balance.
+		return returnString;
 	}
 
 	@Override
 	public String updatePin(int newPin) {
-		newPin = 0;
-		String nPin = "";
 		try {
-			// GET LIST
 			String sql = "SELECT User_ID, Pin FROM User where User_ID = ?";
 			PreparedStatement stmt = connection.prepareStatement(sql);
 			stmt.setInt(User_ID, 1);
 			ResultSet results = stmt.executeQuery();
 
 			while (results.next()) {
-				// Allow the user to make changes
-				System.out.println("New Pin:");
-				newPin = sc.nextInt();
-				// Update the table
+				// Update the table in mysql
 				sql = "UPDATE User SET Pin = ? WHERE User_ID = ?";
 				stmt = connection.prepareStatement(sql);
 				stmt.setInt(1, newPin);
@@ -148,17 +140,14 @@ public class ATM implements ATM_Plan {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return nPin = "Pin has been changed to: " + newPin;
+		return returnString = "Pin has been changed to: " + newPin;
 	}
 
 	@Override
-	public String deleteAnAccount(int userID, int deleteID, int transID) {
-		// account to be deleted, and account to receive the money
-		// initialize variables
-		userID = 0;
-		deleteID = 0;
-		transID = 0;
-		amountTrans = 0;
+	public String deleteAnAccount(int deleteID, int transID) {
+		long amountTrans = 0;
+		// Delete account transfers and updates balances, creates transactions, and
+		// deletes an account
 
 		// Get the amount into variable amountTrans
 		String sql2 = "SELECT User_ID, Account_ID, Account_balance FROM Bank_account where Account_ID = ?";
@@ -167,31 +156,29 @@ public class ATM implements ATM_Plan {
 			stmt.setInt(1, deleteID);
 			stmt.execute();
 			ResultSet results = stmt.executeQuery();
-			while (results.next()) {
-				amountTrans = results.getLong("Account_balance");
-			}
+			amountTrans = results.getLong("Account_balance");
+
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 
 		// Create transaction for the account it is transferring to before account
-		// deletion
+
 		String sql1 = "INSERT INTO Transaction (User_ID, Account_ID, sign, Amount_trans) VALUES (?,?,?,?)";
 		try {
 			PreparedStatement stmt = connection.prepareStatement(sql1);
-			stmt.setInt(1, userID);
+			stmt.setInt(1, User_ID);
 			stmt.setInt(2, transID);
 			stmt.setString(3, "A");
 			stmt.setLong(4, amountTrans);
 			stmt.execute();
-			// updating accounts after transfer (one to be deleted will be 0)
-			updateAccount(userID, transID, "A", amountTrans);
-			updateAccount(userID, deleteID, "M", amountTrans);
+			// updating accounts post transfer (one to be deleted will have $) balance)
+			updateAccount(transID, "A", amountTrans);
+			updateAccount(deleteID, "M", amountTrans);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		// Initializing variable
-		String returnString = "";
+		// deletion
 		try {
 			String sql = "SELECT User_ID, Account_ID, FROM Bank_account where Account_ID = ?";
 			PreparedStatement stmt = connection.prepareStatement(sql);
@@ -211,20 +198,17 @@ public class ATM implements ATM_Plan {
 	}
 
 	@Override
-	public void updateAccount(int User_ID, int Account_ID, String sign, long amountTrans) {
-
+	public void updateAccount(int Account_ID, String sign, long amountTrans) {
+		long balance = 0;
 		// adds or subtracts the transaction amount depending on the sign
-
-		if (sign.contentEquals("a") | sign.contentEquals("A")) {
+		if (sign.contentEquals("a") || sign.contentEquals("A")) {
 			try {// Update balance in bank account transfered to
-				String sql = "SELECT User_ID, Account_ID, Account_balance FROM Bank_account where Account_ID = ?";
+				String sql = "SELECT User_ID, Account_ID, Account_balance FROM Bank_account WHERE Account_ID = ?";
 				PreparedStatement stmt = connection.prepareStatement(sql);
 				stmt.setInt(Account_ID, 1);
 				ResultSet results = stmt.executeQuery();
 				// the new balance is + the transfer
 				balance = results.getLong("Account_balance") + amountTrans;
-				System.out.println("New Balance = $" + balance);
-
 				while (results.next()) {
 					// Update the table
 					sql = "UPDATE Bank_account SET Account_balance = ? WHERE Account_ID = ?";
@@ -238,15 +222,14 @@ public class ATM implements ATM_Plan {
 			}
 		}
 
-		if (sign.contentEquals("M") | sign.contentEquals("m")) {
+		if (sign.contentEquals("M") || sign.contentEquals("m")) {
 			try {// Update balance in bank account transfered from
-				String sql = "SELECT User_ID, Account_ID, Account_balance FROM Bank_account where Account_ID = ?";
+				String sql = "SELECT User_ID, Account_ID, Account_balance FROM Bank_account WHERE Account_ID = ?";
 				PreparedStatement stmt = connection.prepareStatement(sql);
 				stmt.setInt(Account_ID, 1);
 				ResultSet results = stmt.executeQuery();
 				// the new balance is + the transfer
 				balance = results.getInt("Account_balance") - amountTrans;
-				System.out.println("New Balance = $" + balance);
 
 				while (results.next()) {
 					// Update the table
@@ -266,13 +249,8 @@ public class ATM implements ATM_Plan {
 	@Override
 	public String search(String s, int Account_ID) {
 
-		// search for m or a
-		s = "";
-		String returnString = "";
-		
+		// search for m (minuses) or a (additions) to the account
 		String sql = "SELECT Transaction_ID, User_ID, Account_ID, sign, Amount_trans FROM Transaction where Account_ID = ? sign = ? order by Transaction_ID";
-		System.out.println("Which Account ID?");
-		Account_ID = 0;
 		try {
 			PreparedStatement stmt = connection.prepareStatement(sql);
 			stmt.setInt(1, Account_ID);
@@ -280,10 +258,10 @@ public class ATM implements ATM_Plan {
 			ResultSet results = stmt.executeQuery();
 			while (results.next()) {
 				returnString = returnString + " " + results.getInt("Transaction_ID");
-				returnString = returnString + " " +  results.getInt("User_ID,");
-				returnString = returnString + " " +  results.getInt("Account_ID");
-				returnString = returnString + " " +  results.getString("sign");
-				returnString = returnString + " " +  results.getString("Amount_trans") + "\n";
+				returnString = returnString + " " + results.getInt("User_ID,");
+				returnString = returnString + " " + results.getInt("Account_ID");
+				returnString = returnString + " " + results.getString("sign");
+				returnString = returnString + " " + results.getString("Amount_trans") + "\n";
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -292,15 +270,7 @@ public class ATM implements ATM_Plan {
 	}
 
 	@Override
-	public String sort(int x, int Account_ID) {
-	
-		x = 0;
-		String returnSort = "";
-		Account_ID = 0;
-
-		// Sort transactions by: 1) Amount 2) Add (a) or Minus (m)
-		x = sc.nextInt();
-
+	public String sort(int x, int Account_ID) { // Sort transactions by: 1) Amount 2) Add (a) or Minus (m)
 		// Sort by amount
 		if (x == 1) {
 			String sql = "SELECT Transaction_ID, User_ID, Account_ID, sign, Amount_trans FROM Transaction where Account_ID = ? order by Amount_trans";
@@ -309,18 +279,17 @@ public class ATM implements ATM_Plan {
 				stmt.setInt(1, Account_ID);
 				ResultSet results = stmt.executeQuery();
 				while (results.next()) {
-					returnSort = returnSort + results.getInt("Transaction_ID");
-					returnSort = returnSort + "\t" + results.getInt("User_ID,");
-					returnSort = returnSort + "\t" + results.getInt("Account_ID");
-					returnSort = returnSort + "\t" + results.getString("sign");
-					returnSort = returnSort + "\t" + results.getString("Amount_trans") + "\n";
+					returnString = returnString + results.getInt("Transaction_ID");
+					returnString = returnString + "\t" + results.getInt("User_ID,");
+					returnString = returnString + "\t" + results.getInt("Account_ID");
+					returnString = returnString + "\t" + results.getString("sign");
+					returnString = returnString + "\t" + results.getString("Amount_trans") + "\n";
 				}
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
 		}
-		
-		// Sort by sign
+		// Sort by sign-- m (minuses) or a (additions)
 		if (x == 2) {
 			String sql = "SELECT Transaction_ID, User_ID, Account_ID, sign, Amount_trans FROM Transaction where Account_ID = ? order by sign";
 			try {
@@ -328,18 +297,18 @@ public class ATM implements ATM_Plan {
 				stmt.setInt(1, Account_ID);
 				ResultSet results = stmt.executeQuery();
 				while (results.next()) {
-					returnSort = returnSort + results.getInt("Transaction_ID");
-					returnSort = returnSort + "\t" + results.getInt("User_ID,");
-					returnSort = returnSort + "\t" + results.getInt("Account_ID");
-					returnSort = returnSort + "\t" + results.getString("sign");
-					returnSort = returnSort + "\t" + results.getString("Amount_trans") + "\n";
+					returnString = returnString + results.getInt("Transaction_ID");
+					returnString = returnString + "\t" + results.getInt("User_ID,");
+					returnString = returnString + "\t" + results.getInt("Account_ID");
+					returnString = returnString + "\t" + results.getString("sign");
+					returnString = returnString + "\t" + results.getString("Amount_trans") + "\n";
 				}
 
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
 		}
-		return returnSort;
+		return returnString;
 	}
 
 }

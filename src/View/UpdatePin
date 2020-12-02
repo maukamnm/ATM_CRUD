@@ -1,6 +1,136 @@
 package View;
 
+import javapackage View;
+
 import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.UIManager;
+import Controller.ATM;
+import Model.Connection;
+
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import javax.swing.UnsupportedLookAndFeelException;
+
+public class UpdatePin extends JFrame {
+
+	// instance of atm
+	static ATM atm = new ATM();
+	private static final long serialVersionUID = 1L;
+	// Initializing JTextFields
+	private JTextField PinField;
+	private JLabel messageLabel;
+
+	// Constructor
+	public UpdatePin() {
+		initComponents();
+	}
+
+	private void initComponents() {
+		// Throwing exceptions
+		try {
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException
+				| UnsupportedLookAndFeelException e) {
+			System.out.println(e);
+		}
+
+		setTitle("Update Pin ");
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setLocationByPlatform(true);
+
+		// Creating jtextfields for all of the information desired
+
+		PinField = new JTextField();
+		messageLabel = new JLabel("");
+
+		// setting dminensions for the box
+		Dimension dim = new Dimension(150, 20);
+
+		// setting size
+		PinField.setPreferredSize(dim);
+		PinField.setMinimumSize(dim);
+
+		JButton SortButton = new JButton("Update");
+		JButton menuButton = new JButton("Menu");
+
+		SortButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				RegisterButtonClicked();
+			}
+		});
+
+		// Sending anonymous object to the addActionListner function
+
+		menuButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				menuButtonClicked();
+			}
+		});
+
+		// button panel of register and exit
+		JPanel buttonPanel = new JPanel();
+		buttonPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
+		buttonPanel.add(SortButton);
+		buttonPanel.add(menuButton);
+
+		// main panel that creates JLabels that go in order next to the text fields
+
+		JPanel panel = new JPanel();
+		panel.setLayout(new GridBagLayout());
+		panel.add(new JLabel("New Pin"), getConstraints(0, 1));
+		panel.add(PinField, getConstraints(1, 1));
+
+		GridBagConstraints c = getConstraints(0, 6);
+		c.gridwidth = 22;
+		panel.add(messageLabel, c);
+		add(panel, BorderLayout.CENTER);
+		add(buttonPanel, BorderLayout.SOUTH);
+		// setting dimensions for the full pane.
+		setSize(new Dimension(490, 300));
+
+	}
+
+	// helper method for getting a GridBagConstraints object
+	private GridBagConstraints getConstraints(int x, int y) {
+
+		GridBagConstraints c = new GridBagConstraints();
+		c.anchor = GridBagConstraints.LINE_START;
+		c.insets = new Insets(5, 5, 0, 5);
+		c.gridx = x;
+		c.gridy = y;
+		return c;
+
+	}
+
+	public void menuButtonClicked() {
+		Menu.createAndShowGUI();
+	}
+
+	public void RegisterButtonClicked() {
+		int Pin = Integer.valueOf((PinField.getText()));
+		messageLabel.setText(atm.updatePin(Pin));
+		Menu.createAndShowGUI();
+	}
+
+	// The main function in this class where everything in the JFrame is called on
+	// to be executed,
+	// and seen
+	public static void createAndShowGUI() {
+		Connection.Conn();
+		JFrame frame = new UpdatePin();
+		frame.setVisible(true);
+	}
+}.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;

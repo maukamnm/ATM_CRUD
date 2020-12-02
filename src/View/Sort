@@ -13,31 +13,29 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
 import Controller.ATM;
+import Model.Connection;
+
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.UnsupportedLookAndFeelException;
 
-public class Sort extends JFrame {
+public class SortA extends JFrame {
 
-	//instance of atm
+	// instance of atm
 	static ATM atm = new ATM();
-	// add this field
-//Initializing JTextFields
 	private static final long serialVersionUID = 1L;
-
-	// public String deleteAnAccount(int deleteID);
-
-	private JTextField TransferToIDField;
-	private JTextField TransferFromIDField;
-	private JTextField UserIDField;
+	// Initializing JTextFields
+	private JTextField Xfield;
+	private JTextField AccountIDField;
 	private JLabel messageLabel;
 
-	public Sort() {
+	// Constructor
+	public SortA() {
 		initComponents();
 	}
 
 	private void initComponents() {
-		//Throwing exceptions
+		// Throwing exceptions
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException
@@ -51,24 +49,21 @@ public class Sort extends JFrame {
 
 		// Creating jtextfields for all of the information desired
 
-		TransferToIDField = new JTextField();
-		TransferFromIDField = new JTextField();
-		UserIDField = new JTextField();
-		messageLabel = new JLabel("Hi! Please enter your information.");
+		Xfield = new JTextField();
+		AccountIDField = new JTextField();
+		messageLabel = new JLabel("");
 
 		// setting dminensions for the box
 		Dimension dim = new Dimension(150, 20);
 
 		// setting size
-		TransferToIDField.setPreferredSize(dim);
-		TransferFromIDField.setPreferredSize(dim);
-		UserIDField.setPreferredSize(dim);
-		TransferToIDField.setMinimumSize(dim);
-		TransferFromIDField.setMinimumSize(dim);
-		UserIDField.setMinimumSize(dim);
+		Xfield.setPreferredSize(dim);
+		AccountIDField.setPreferredSize(dim);
+		Xfield.setMinimumSize(dim);
+		AccountIDField.setMinimumSize(dim);
 
 		JButton SortButton = new JButton("Sort");
-		JButton menuButton = new JButton("Menu"); 
+		JButton menuButton = new JButton("Menu");
 
 		SortButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -94,25 +89,26 @@ public class Sort extends JFrame {
 
 		JPanel panel = new JPanel();
 		panel.setLayout(new GridBagLayout());
-		panel.add(new JLabel("Account to Transfer To"), getConstraints(0, 0));
-		panel.add(TransferToIDField, getConstraints(1, 0));
-		panel.add(new JLabel("Account to Transfer From"), getConstraints(0, 1));
-		panel.add(TransferFromIDField, getConstraints(1, 1));
-		panel.add(new JLabel("User ID:"), getConstraints(0, 2));
-		panel.add(UserIDField, getConstraints(1, 2));
+		panel.add(new JLabel("Account ID:"), getConstraints(0, 0));
+		panel.add(AccountIDField, getConstraints(1, 0));
+		panel.add(new JLabel("Sort by 1) amount 2) Additions Minuses. Type 1 or 2:"),
+				getConstraints(0, 1));
+		panel.add(Xfield, getConstraints(1, 1));
+
 		GridBagConstraints c = getConstraints(0, 6);
 		c.gridwidth = 22;
 		panel.add(messageLabel, c);
 		add(panel, BorderLayout.CENTER);
 		add(buttonPanel, BorderLayout.SOUTH);
 		// setting dimensions for the full pane.
-		setSize(new Dimension(420, 300));
+		setSize(new Dimension(490, 300));
 
 	}
 
 	// helper method for getting a GridBagConstraints object
 
-	private GridBagConstraints getConstraints(int x, int y) {  
+	private GridBagConstraints getConstraints(int x, int y) {
+
 		GridBagConstraints c = new GridBagConstraints();
 		c.anchor = GridBagConstraints.LINE_START;
 		c.insets = new Insets(5, 5, 0, 5);
@@ -121,18 +117,13 @@ public class Sort extends JFrame {
 		return c;
 
 	}
-	
+
 	private void SortButtonClicked() {
-
-		int toID = Integer.valueOf(TransferToIDField.getText());
-		int fromID = Integer.valueOf(TransferFromIDField.getText());
-		int UserID = Integer.valueOf(UserIDField.getText());
-		atm.deleteAnAccount(UserID, fromID, toID);
-
+		int AccountID = Integer.valueOf(AccountIDField.getText());
+		int x = Integer.valueOf(Xfield.getText());
+		messageLabel.setText(atm.sort(x, AccountID));
 	}
 
-//If the user decides to changed his mind, he can press exit and escape the
-	// potentially frightful array of colors.
 	private void menuButtonClicked() {
 		Login_GUI.createAndShowGUI();
 	}
@@ -140,7 +131,8 @@ public class Sort extends JFrame {
 //The main function where everything in the JFrame is called on to be executed,
 // and seen
 	public static void createAndShowGUI() {
-		JFrame frame = new Delete();
+		Connection.Conn();
+		JFrame frame = new SortA();
 		frame.setVisible(true);
 
 	}

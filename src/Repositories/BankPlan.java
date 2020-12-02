@@ -1,29 +1,21 @@
 package Repositories;
 
-public interface BankPlan {
+public interface ATM_Plan {
 
-	public void login();
-
-	public void menu();
+	public void login(long cc, int pin);
 
 	public void createAccount();
 
-	public void createDeposit();
+	public String readAccountInfo();
 
-	public void readAccountInfo();
+	public String deleteAnAccount(int deleteID, int transID);
 
-	public void readTransactions();
+	public String search(String s, int Account_ID);
 
-	public void updatePin();
+	public String sort(int x, int Account_ID);
 
-	public void updateTransfer();
+	public void updateAccount(int Account_ID, String sign, long amountTrans);
 
-	public void deleteWithdrawal();
-
-	public void payBill();
-	
-	public void transferAndDeleteAnAccount();
-
-	public void search();
+	public String updatePin(int newPin);
 
 }

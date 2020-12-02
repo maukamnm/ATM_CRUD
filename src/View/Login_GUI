@@ -9,45 +9,28 @@ import java.awt.Insets;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.UnsupportedLookAndFeelException;
-
 import Controller.ATM;
+import Model.Connection;
 
-public class Login_GUI extends JFrame implements ActionListener{
-	//Start Menu attributes -- 
-	// menubar 
-	static JMenuBar mb; 
-	// JMenu 
-	static JMenu x; 
-	// Menu items 
-	static JMenuItem C, R, U, D, Search, Sort; 
-	// create a frame 
-	static JFrame f; 
-	// The label 
-	static JLabel l; 
-	 //End menu attributes --
-	 
-	
-	
+public class Login_GUI extends JFrame {
+
 	static ATM atm = new ATM();
-	// add this field
-	// Initializing JTextFields
-	private static final long serialVersionUID = 1L;
+	static Connection newconnect = new Connection();
 
-	// For the login
+	private static final long serialVersionUID = 1L;
+	// Initializing JTextFields
+	// Login textFields
 	private JTextField CCField = new JTextField();
 	private JTextField PinField = new JTextField();
-
 	private JLabel messageLabel = new JLabel("Hi! Please enter your information.");;
 
+	// Constructor
 	public Login_GUI() {
 		initComponents();
 	}
@@ -62,7 +45,7 @@ public class Login_GUI extends JFrame implements ActionListener{
 
 		}
 
-		setTitle("ATM");
+		setTitle("ATM Login");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setLocationByPlatform(true);
 
@@ -74,18 +57,14 @@ public class Login_GUI extends JFrame implements ActionListener{
 		CCField.setMinimumSize(dim);
 		PinField.setMinimumSize(dim);
 
-
 		JButton registerButton = new JButton("Register");
 		JButton exitButton = new JButton("Exit");
 
-		// need to open the function
-		// Sending anonymous object to the addActionListner function
 		registerButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				// Call to method "clicked"
 				registerButtonClicked();
 			}
-
 		});
 
 		// Sending anonymous object to the addActionListner function
@@ -102,7 +81,6 @@ public class Login_GUI extends JFrame implements ActionListener{
 		buttonPanel.add(exitButton);
 
 		// main panel that creates JLabels that go in order next to the text fields
-
 		JPanel panel = new JPanel();
 		panel.setLayout(new GridBagLayout());
 		panel.add(new JLabel("Credit Card Number:"), getConstraints(0, 0));
@@ -121,41 +99,38 @@ public class Login_GUI extends JFrame implements ActionListener{
 		setSize(new Dimension(420, 300));
 	}
 
-	// helper method for getting a GridBagConstraints object
-
+	// places components in grids of rows and columns
 	private GridBagConstraints getConstraints(int x, int y) {
+
 		GridBagConstraints c = new GridBagConstraints();
 		c.anchor = GridBagConstraints.LINE_START;
-		c.insets = new Insets(5, 5, 0, 5);
+		c.insets = new Insets(9, 9, 9, 9);
 		c.gridx = x;
 		c.gridy = y;
 		return c;
 
 	}
 
+	// called in the event handler
 	public void registerButtonClicked() {
+
 		long logcc = Long.valueOf(CCField.getText());
 		int logpin = Integer.valueOf(PinField.getText());
-		
+
 		if (CCField.getText().isEmpty() || PinField.getText().isEmpty()) {
 			messageLabel.setText("Please enter your card number and pin");
 		}
-		if(ATM.loggedIn(logcc, logpin) == true) {
+		atm.login(logcc, logpin);
+		if (ATM.loggedIn() == true) {
 			messageLabel.setText("Logged in!");
-			showMenu();
+			Menu.createAndShowGUI();
+		} else {
+			//setting the message to say not logged in
+			messageLabel.setText("I don't recognize you.. Try again..");
 		}
-		else {
-			messageLabel.setText("I don't recognize you!");
-			//Not registering the login even when valid. My second project without the GUI is able to login correctly.
-			showMenu();
-		}
-		
 
 	}
 
-
-	// If the user decides to changed his mind, he can press exit and escape the
-	// potentially frightful array of colors.
 	private void exitButtonClicked() {
 		System.exit(0);
 	}
@@ -165,92 +140,7 @@ public class Login_GUI extends JFrame implements ActionListener{
 	public static void createAndShowGUI() {
 		JFrame frame = new Login_GUI();
 		frame.setVisible(true);
-
-	}
-
-	public static void showMenu() {
-			// create an object of the class 
-			Login_GUI menu = new Login_GUI(); 
-
-			// create a frame 
-			f = new JFrame("Menu demo"); 
-
-			// create a label 
-			l = new JLabel(""); 
-
-			// create a menubar 
-			mb = new JMenuBar(); 
-
-			// create a menu 
-			x = new JMenu("ATM Menu"); 
-
-			// create menuitems 
-			C = new JMenuItem("Create Account"); 
-			R = new JMenuItem("Read Account Info"); 
-			U = new JMenuItem("Update Pin"); 
-			D = new JMenuItem("Delete Account"); 
-			Search = new JMenuItem("Search"); 
-			Sort = new JMenuItem("Sort"); 
-
-			// add ActionListener to menuItems 
-			C.addActionListener(menu); 
-			R.addActionListener(menu); 
-			U.addActionListener(menu); 
-			D.addActionListener(menu); 
-			Search.addActionListener(menu); 
-			Sort.addActionListener(menu); 
-
-			// add menu items to menu 
-			x.add(C); 
-			x.add(R); 
-			x.add(U); 
-			x.add(D); 
-			x.add(Search); 
-			x.add(Sort); 
-
-
-			// add menu to menu bar 
-			mb.add(x); 
-
-			// add menubar to frame 
-			f.setJMenuBar(mb); 
-
-			// add label 
-			f.add(l); 
-
-			// set the size of the frame 
-			f.setSize(500, 500); 
-			
-			f.setVisible(true);
-		
-	}
-	@Override
-	public void actionPerformed(ActionEvent e) {
-		String s = e.getActionCommand(); 
-		if(s.equals(C)) {			
-			//Get userID
-			Create.createAndShowGUI();
-			l.setText("New Account Created!"); 
-			
-		}
-		if(s.equals(R)) {
-			
-			
-		}
-		if(s.equals(U)) {
-			UpdatePin.createAndShowGUI();
-		}
-		if(s.equals(D)) {
-			Delete.createAndShowGUI();
-		}
-		if(s.equals(Search)) {
-			
-		}
-		if(s.equals(Sort)) {
-		
-		}
-		// set the label to the menuItem that is selected 
-		l.setText(s + " selected"); 
+		Connection.Conn();
 	}
 
 }

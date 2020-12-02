@@ -17,21 +17,16 @@ import java.awt.event.ActionEvent;
 import javax.swing.UnsupportedLookAndFeelException;
 
 import Controller.ATM;
+import Model.Connection;
 
 public class Create extends JFrame {
-	
-	
-	
+
 	static ATM atm = new ATM();
-	// add this field
 	// Initializing JTextFields
 	private static final long serialVersionUID = 1L;
+	private JLabel messageLabel = new JLabel("Account Created!");
 
-	// For the user to fill out their ID
-	private JTextField User_IDField = new JTextField();
-
-	private JLabel messageLabel = new JLabel("Hi! Please enter your information.");;
-
+	// Constructor
 	public Create() {
 		initComponents();
 	}
@@ -39,59 +34,36 @@ public class Create extends JFrame {
 	private void initComponents() {
 		// Throwing exception
 		try {
-
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-
 		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException
-
 				| UnsupportedLookAndFeelException e) {
-
 			System.out.println(e);
-
 		}
 
-		setTitle("ATM");
+		setTitle("Create Account");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setLocationByPlatform(true);
 
 		Dimension dim = new Dimension(150, 20);
 
-		// setting size for login
-		User_IDField.setPreferredSize(dim);
-		User_IDField.setMinimumSize(dim);
-
-		JButton registerButton = new JButton("Create Account");
 		JButton menuB = new JButton("Menu");
-
-		// need to open the function
-		// Sending anonymous object to the addActionListner function
-		registerButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				// Call to method "clicked"
-				 RegisterButtonClicked();
-			}
-
-		});
 
 		// Sending anonymous object to the addActionListner function
 		menuB.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				Login_GUI.showMenu();
+				Menu.createAndShowGUI();
 			}
 		});
 
+		// adding buttons to button panel
 		JPanel buttonPanel = new JPanel();
 		buttonPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
-		buttonPanel.add(registerButton);
 		buttonPanel.add(menuB);
 
 		// main panel that creates JLabels that go in order next to the text fields
 		JPanel panel = new JPanel();
 		panel.setLayout(new GridBagLayout());
-		panel.add(new JLabel("User ID"), getConstraints(0, 0));
-		panel.add(User_IDField, getConstraints(1, 0));
 
-		// add label as last row of main panel
 		GridBagConstraints c = getConstraints(0, 6);
 		c.gridwidth = 22;
 		panel.add(messageLabel, c);
@@ -103,7 +75,6 @@ public class Create extends JFrame {
 	}
 
 	// helper method for getting a GridBagConstraints object
-
 	private GridBagConstraints getConstraints(int x, int y) {
 		GridBagConstraints c = new GridBagConstraints();
 		c.anchor = GridBagConstraints.LINE_START;
@@ -111,21 +82,16 @@ public class Create extends JFrame {
 		c.gridx = x;
 		c.gridy = y;
 		return c;
-
 	}
 
-	public void RegisterButtonClicked() {
-		int userId = Integer.valueOf((User_IDField.getText()));
-		atm.createAccount(userId);
-		Login_GUI.showMenu();
-	}
-
-	// The main function in this class where everything in the JFrame is called on to be executed,
+	// The main function in this class where everything in the JFrame is called on
+	// to be executed,
 	// and seen
 	public static void createAndShowGUI() {
+		Connection.Conn();
+		atm.createAccount();
 		JFrame frame = new Create();
 		frame.setVisible(true);
 	}
-
 
 }

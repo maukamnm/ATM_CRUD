@@ -16,108 +16,96 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.UnsupportedLookAndFeelException;
 import Controller.ATM;
+import Model.Connection;
 
-public class Read {
+public class Read extends JFrame {
 
-	public class UpdatePin extends JFrame {
+	ATM atm = new ATM();
+	// Initializing JTextFields
+	private static final long serialVersionUID = 1L;
+	private JLabel messageLabel = new JLabel("Click 'read' to read account info");
 
-		ATM atm = new ATM();
-		// add this field
-		// Initializing JTextFields
-		private static final long serialVersionUID = 1L;
+	// Constructor
+	public Read() {
+		initComponents();
+	}
 
-		// For the user to fill out their ID
-		private JTextField User_IDField = new JTextField();
-
-		private JLabel messageLabel = new JLabel("Hi! Please enter your information.");;
-
-		public UpdatePin() {
-			initComponents();
+	private void initComponents() {
+		// Throwing exception
+		try {
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException
+				| UnsupportedLookAndFeelException e) {
+			System.out.println(e);
 		}
 
-		private void initComponents() {
-			// Throwing exception
-			try {
-				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-			} catch (ClassNotFoundException | InstantiationException | IllegalAccessException
-				| UnsupportedLookAndFeelException e) {
-				System.out.println(e);
+		setTitle("Read Account Information");
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setLocationByPlatform(true);
+
+		Dimension dim = new Dimension(150, 20);
+
+		JButton ReadButton = new JButton("Read");
+		JButton menuB = new JButton("Menu");
+
+		// need to open the function
+		// Sending anonymous object to the addActionListner function
+		ReadButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				// Call to method "clicked"
+				RegisterButtonClicked();
 			}
 
-			setTitle("Read Account Information");
-			setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-			setLocationByPlatform(true);
+		});
 
-			Dimension dim = new Dimension(150, 20);
+		// Sending anonymous object to the addActionListner function
+		menuB.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				Menu.createAndShowGUI();
+			}
+		});
 
-			// setting size for login
-			User_IDField.setPreferredSize(dim);
-			User_IDField.setMinimumSize(dim);
+		JPanel buttonPanel = new JPanel();
+		buttonPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
+		buttonPanel.add(ReadButton);
+		buttonPanel.add(menuB);
 
-			JButton ReadButton = new JButton("Read");
-			JButton menuB = new JButton("Menu");
+		// main panel that creates JLabels that go in order next to the text fields
+		JPanel panel = new JPanel();
+		panel.setLayout(new GridBagLayout());
 
-			// need to open the function
-			// Sending anonymous object to the addActionListner function
-			ReadButton.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					// Call to method "clicked"
-					RegisterButtonClicked();
-				}
+		// add label as last row of main panel
+		GridBagConstraints c = getConstraints(0, 6);
+		c.gridwidth = 22;
+		panel.add(messageLabel, c);
+		add(panel, BorderLayout.CENTER);
+		add(buttonPanel, BorderLayout.SOUTH);
 
-			});
+		// setting dimensions for the full pane.
+		setSize(new Dimension(520, 300));
+	}
 
-			// Sending anonymous object to the addActionListner function
-			menuB.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					Login_GUI.showMenu();
-				}
-			});
+	// helper method for getting a GridBagConstraints object
 
-			JPanel buttonPanel = new JPanel();
-			buttonPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
-			buttonPanel.add(ReadButton);
-			buttonPanel.add(menuB);
+	private GridBagConstraints getConstraints(int x, int y) {
+		GridBagConstraints c = new GridBagConstraints();
+		c.anchor = GridBagConstraints.LINE_START;
+		c.insets = new Insets(5, 5, 0, 5);
+		c.gridx = x;
+		c.gridy = y;
+		return c;
 
-			// main panel that creates JLabels that go in order next to the text fields
-			JPanel panel = new JPanel();
-			panel.setLayout(new GridBagLayout());
-			panel.add(new JLabel("Read Account Info"), getConstraints(0, 0));
-			panel.add(User_IDField, getConstraints(1, 0));
+	}
 
-			// add label as last row of main panel
-			GridBagConstraints c = getConstraints(0, 6);
-			c.gridwidth = 22;
-			panel.add(messageLabel, c);
-			add(panel, BorderLayout.CENTER);
-			add(buttonPanel, BorderLayout.SOUTH);
+	public void RegisterButtonClicked() {
+		messageLabel.setText("Account Information: " + atm.readAccountInfo()); 
+	}
 
-			// setting dimensions for the full pane.
-			setSize(new Dimension(100, 100));
-		}
-
-		// helper method for getting a GridBagConstraints object
-
-		private GridBagConstraints getConstraints(int x, int y) {
-			GridBagConstraints c = new GridBagConstraints();
-			c.anchor = GridBagConstraints.LINE_START;
-			c.insets = new Insets(5, 5, 0, 5);
-			c.gridx = x;
-			c.gridy = y;
-			return c;
-
-		}
-
-		public void RegisterButtonClicked() {
-			int userId = Integer.valueOf((User_IDField.getText()));
-			atm.updatePin(userId);
-			Login_GUI.showMenu();
-		}
-
-		// The function in the class where everything in the JFrame is called on to be executed and seen
-		public void createAndShowGUI() {
-			JFrame frame = new Create();
-			frame.setVisible(true);
-		}
+	// The function in the class where everything in the JFrame is called on to be
+	// executed and seen
+	public static void createAndShowGUI() {
+		Connection.Conn();
+		JFrame frame = new Read();
+		frame.setVisible(true);
 	}
 }

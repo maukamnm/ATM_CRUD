@@ -12,97 +12,95 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
+import Controller.ATM;
+import Model.Connection;
+
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.UnsupportedLookAndFeelException;
 
-import Controller.ATM;
-
 public class UpdatePin extends JFrame {
-	
+
+	// instance of atm
 	static ATM atm = new ATM();
-	// add this field
-	// Initializing JTextFields
 	private static final long serialVersionUID = 1L;
+	// Initializing JTextFields
+	private JTextField PinField;
+	private JLabel messageLabel;
 
-	// For the user to fill out their ID
-	private JTextField PinField = new JTextField();
-
-	private JLabel messageLabel = new JLabel("Hi! Please enter your information.");;
-
+	// Constructor
 	public UpdatePin() {
 		initComponents();
 	}
 
 	private void initComponents() {
-		// Throwing exception
+		// Throwing exceptions
 		try {
-
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-
 		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException
-
 				| UnsupportedLookAndFeelException e) {
-
 			System.out.println(e);
-
 		}
 
-		setTitle("ATM");
+		setTitle("Update Pin ");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setLocationByPlatform(true);
 
+		// Creating jtextfields for all of the information desired
+
+		PinField = new JTextField();
+		messageLabel = new JLabel("");
+
+		// setting dminensions for the box
 		Dimension dim = new Dimension(150, 20);
 
-		// setting size for login
+		// setting size
 		PinField.setPreferredSize(dim);
 		PinField.setMinimumSize(dim);
 
-		JButton registerButton = new JButton("Edit Pin");
-		JButton menuB = new JButton("Menu");
+		JButton SortButton = new JButton("Update");
+		JButton menuButton = new JButton("Menu");
 
-		// need to open the function
-		// Sending anonymous object to the addActionListner function
-		registerButton.addActionListener(new ActionListener() {
+		SortButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				// Call to method "clicked"
-				 RegisterButtonClicked();
-			}
-
-		});
-
-		// Sending anonymous object to the addActionListner function
-		menuB.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				Login_GUI.showMenu();
+				RegisterButtonClicked();
 			}
 		});
 
+		// Sending anonymous object to the addActionListner function
+
+		menuButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				menuButtonClicked();
+			}
+		});
+
+		// button panel of register and exit
 		JPanel buttonPanel = new JPanel();
 		buttonPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
-		buttonPanel.add(registerButton);
-		buttonPanel.add(menuB);
+		buttonPanel.add(SortButton);
+		buttonPanel.add(menuButton);
 
 		// main panel that creates JLabels that go in order next to the text fields
+
 		JPanel panel = new JPanel();
 		panel.setLayout(new GridBagLayout());
-		panel.add(new JLabel("New Pin"), getConstraints(0, 0));
-		panel.add(PinField, getConstraints(1, 0));
+		panel.add(new JLabel("New Pin"), getConstraints(0, 1));
+		panel.add(PinField, getConstraints(1, 1));
 
-		// add label as last row of main panel
 		GridBagConstraints c = getConstraints(0, 6);
 		c.gridwidth = 22;
 		panel.add(messageLabel, c);
 		add(panel, BorderLayout.CENTER);
 		add(buttonPanel, BorderLayout.SOUTH);
-
 		// setting dimensions for the full pane.
-		setSize(new Dimension(420, 300));
+		setSize(new Dimension(490, 300));
+
 	}
 
 	// helper method for getting a GridBagConstraints object
-
 	private GridBagConstraints getConstraints(int x, int y) {
+
 		GridBagConstraints c = new GridBagConstraints();
 		c.anchor = GridBagConstraints.LINE_START;
 		c.insets = new Insets(5, 5, 0, 5);
@@ -112,15 +110,21 @@ public class UpdatePin extends JFrame {
 
 	}
 
-	public void RegisterButtonClicked() {
-		int userId = Integer.valueOf((PinField.getText()));
-		atm.updatePin(userId);
-		Login_GUI.showMenu();
+	public void menuButtonClicked() {
+		Menu.createAndShowGUI();
 	}
-	
-	// The main function in this class where everything in the JFrame is called on to be executed,
+
+	public void RegisterButtonClicked() {
+		int Pin = Integer.valueOf((PinField.getText()));
+		messageLabel.setText(atm.updatePin(Pin));
+		Menu.createAndShowGUI();
+	}
+
+	// The main function in this class where everything in the JFrame is called on
+	// to be executed,
 	// and seen
 	public static void createAndShowGUI() {
+		Connection.Conn();
 		JFrame frame = new UpdatePin();
 		frame.setVisible(true);
 	}
